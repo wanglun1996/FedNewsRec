@@ -1,0 +1,5 @@
+data
+venv
+wordvec
+*pycache*
+*json*
