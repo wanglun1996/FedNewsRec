@@ -23,7 +23,7 @@ def add_noise(weights,lambd):
         weights[i] += np.random.laplace(scale = lambd,size=weights[i].shape)
     return weights
 
-def fed_single_update(model,doc_encoder,user_encoder,num,lambd,get_user_data,train_uid_table):
+def fed_single_update(model,doc_encoder,user_encoder,num,lambd,get_user_data,train_uid_table, priv_mode='lambda'):
     random_index = np.random.permutation(len(train_uid_table))[:num]
     
     all_news_weights = []
@@ -41,12 +41,12 @@ def fed_single_update(model,doc_encoder,user_encoder,num,lambd,get_user_data,tra
 
         uid = train_uid_table[uinx]
         click,sample,label = get_user_data(uid)
-        #print(label)
+        # print("*****", sample, click, label)
         g = model.fit([sample,click],label,batch_size = label.shape[0],verbose=False)
         loss.append(g.history['loss'][0])
         news_weight = doc_encoder.get_weights()
         user_weight = user_encoder.get_weights()
-        if lambd>0:
+        if priv_mode=='lambda' and lambd>0:
             news_weight = add_noise(news_weight,lambd)
             user_weight = add_noise(user_weight,lambd)
         #noise = 
